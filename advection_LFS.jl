@@ -1,7 +1,7 @@
 # Advection LFS Scheme
 # ut + a*ux = 0
 # u(x,0) = sin(2πx)
-
+#just trying out something in github
 using Plots
 
 Nx = 100
