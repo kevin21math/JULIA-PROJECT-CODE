@@ -15,7 +15,7 @@ U_exact = zeros(Nt+1, Nx)
 
 for n in 0:Nt
     t = n * dt
-    U_exact[n+1, :] = sin.(2π * mod.(x .- a*t, 1)) 
+    U_exact[n+1, :] = sin.(2π * mod.(x .- a*t, 2)) 
 end
 
 writedlm("exact_solution.csv", U_exact, ',')
