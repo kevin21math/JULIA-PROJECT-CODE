@@ -51,10 +51,14 @@ for Nx in Nx_vals
 end
 
 function convergence_rate(errors, dx_vals)
-    rates = Float64[]
-    for i in 2:6
-        rate = log2(errors[i-1]/errors[i])
-        push!(rates, rate)
+    rates = Any[]
+    for i in 1:6
+        if i == 1
+            push!(rates, "" )  
+        else
+            rate = log2(errors[i-1]/errors[i])
+            push!(rates, rate)
+        end
     end
     return rates
 end
@@ -63,20 +67,11 @@ L1_rates = convergence_rate(L1_errors, dx_vals)
 L2_rates = convergence_rate(L2_errors, dx_vals)
 Linf_rates = convergence_rate(Linf_errors, dx_vals)
 
-error_header = ["dx", "L1_error", "L2_error", "Linf_error"]
-error_data = [dx_vals L1_errors L2_errors Linf_errors]
-open("lax_friedrich_errors.csv", "w") do io
-    writedlm(io, [error_header], ',')
+header = ["dx", "L1_error", "L1_rate","L2_error", "L2_rate","Linf_error", "Linf_rate"]
+data = [dx_vals L1_errors L1_rates L2_errors L2_rates Linf_errors Linf_rates]
+open("lax_friedrich_data.csv", "w") do io
+    writedlm(io, [header], ',')
 end
-open("lax_friedrich_errors.csv", "a") do io
-    writedlm(io, error_data, ',')
-end
-
-rate_header = ["L1_rate", "L2_rate", "Linf_rate"]
-rate_data = [L1_rates L2_rates Linf_rates]
-open("lax_friedrich_rates.csv", "w") do io
-    writedlm(io, [rate_header], ',')
-end
-open("lax_friedrich_rates.csv", "a") do io
-    writedlm(io, rate_data, ',')
+open("lax_friedrich_data.csv", "a") do io
+    writedlm(io, data, ',')
 end
