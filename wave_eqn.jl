@@ -71,8 +71,8 @@ for it = 1:nt
     for i in 1:nx-1
          σ_xx[i, end] = σ_xx[i, end] + vp*(dt / dz) * (σ_xx[i, end] - σ_xx[i, end-1])
          σ_xx[i, 1] = σ_xx[i, 1] - vp*(dt / dz) * (σ_xx[i, 2] - σ_xx[i, 1])
-         σ_zz[i, end] = σ_zz[i, end] + (dt / dz) * (σ_zz[i, end] - σ_zz[i, end-1])
-         σ_zz[i, 1] = σ_zz[i, 1] - (dt / dz) * (σ_zz[i, 2] - σ_zz[i, 1])
+         σ_zz[i, end] = σ_zz[i, end] + vp*(dt / dz) * (σ_zz[i, end] - σ_zz[i, end-1])
+         σ_zz[i, 1] = σ_zz[i, 1] - vp*(dt / dz) * (σ_zz[i, 2] - σ_zz[i, 1])
     end
 
     for i in 2:nx-1
@@ -84,8 +84,8 @@ for it = 1:nt
     end
     
     for j in 1:nz-1
-        σ_xz[end, j] = σ_xz[end, j] + (dt / dx) * (σ_xz[end, j] - σ_xz[end-1, j])
-        σ_xz[1, j] = σ_xz[1, j] - (dt / dx) * (σ_xz[2, j] - σ_xz[1, j])
+        σ_xz[end, j] = σ_xz[end, j] + vp*(dt / dx) * (σ_xz[end, j] - σ_xz[end-1, j])
+        σ_xz[1, j] = σ_xz[1, j] - vp*(dt / dx) * (σ_xz[2, j] - σ_xz[1, j])
     end
     
     if it % 50 == 0
