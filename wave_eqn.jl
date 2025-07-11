@@ -1,15 +1,15 @@
 using Plots
 
 
-nx, nz = 201, 201
-dx, dz = 10.0, 10.0
+nx, nz = 401, 401
+dx, dz = 15.0, 15.0
 nt = 1000
 dt = 0.001  
 T = collect(0:dt:(nt-1)*dt)
 
 ρ = 2500.0
 vp = 4000.0
-nu = 0.2
+nu = 0.25
 vs = vp * sqrt((0.5 - nu) / (1 - nu))
 μ = ρ * vs^2
 λ = ρ * (vp^2 - 2 * vs^2)
@@ -26,13 +26,16 @@ isrc, jsrc = div(nx, 2), div(nz, 2)
 ricker(t) = (1 - 2 * (π*15*t)^2) * exp(-(π*15*t)^2)
 g(t) = -2*40*t*exp(-40*t*t)
 
+#σ_xx[isrc, jsrc] += rg(-0.1)
+#σ_zz[isrc, jsrc] += g(-0.1)
+
 ir, jr = isrc + 10, jsrc
 u_r = zeros(Float64, nt)
 for it = 1:nt
     t = it * dt
-    
-    σ_xx[isrc, jsrc] += ricker(t - 0.1)
-    σ_zz[isrc, jsrc] += ricker(t - 0.1)
+
+    σ_xx[isrc, jsrc] += ricker(0.1 - t)
+    σ_zz[isrc, jsrc] += ricker(0.1 - t)
 
     
     for i in 2:nx-1
@@ -49,13 +52,13 @@ for it = 1:nt
 
     
     for j in 1:nz
-        v_x[end, j] = v_x[end, j] + vp*(dt / dx) * (v_x[end, j] - v_x[end-1, j])
-        v_x[1, j] = v_x[1, j] - vp*(dt / dx) * (v_x[2, j] - v_x[1, j])
+        v_x[end, j] = v_x[end, j] - vp * (dt/dx) * (v_x[end, j] - v_x[end-1, j])
+        v_x[1, j] = v_x[1, j] + vp * (dt/dx) * (v_x[2, j] - v_x[1, j])
     end
    
     for i in 1:nx
-        v_x[i, end] = v_x[i, end] + vp*(dt / dz) * (v_x[i, end] - v_x[i, end-1])
-        v_x[i, 1] = v_x[i, 1] - vp*(dt / dz) * (v_x[i, 2] - v_x[i, 1])
+        v_x[i, end] = v_x[i, end] - vp * (dt/dz) * (v_x[i, end] - v_x[i, end-1])
+        v_x[i, 1] = v_x[i, 1] + vp * (dt/dz) * (v_x[i, 2] - v_x[i, 1])
     end
 
     
@@ -69,10 +72,10 @@ for it = 1:nt
     end
     
     for i in 1:nx-1
-         σ_xx[i, end] = σ_xx[i, end] + vp*(dt / dz) * (σ_xx[i, end] - σ_xx[i, end-1])
-         σ_xx[i, 1] = σ_xx[i, 1] - vp*(dt / dz) * (σ_xx[i, 2] - σ_xx[i, 1])
-         σ_zz[i, end] = σ_zz[i, end] + vp*(dt / dz) * (σ_zz[i, end] - σ_zz[i, end-1])
-         σ_zz[i, 1] = σ_zz[i, 1] - vp*(dt / dz) * (σ_zz[i, 2] - σ_zz[i, 1])
+         σ_xx[i, end] = σ_xx[i, end] - vp * (dt / dz) * (σ_xx[i, end] - σ_xx[i, end-1])
+         σ_xx[i, 1] = σ_xx[i, 1] + vp * (dt / dz) * (σ_xx[i, 2] - σ_xx[i, 1])
+         σ_zz[i, end] = σ_zz[i, end] - vp * (dt / dz) * (σ_zz[i, end] - σ_zz[i, end-1])
+         σ_zz[i, 1] = σ_zz[i, 1] + vp * (dt / dz) * (σ_zz[i, 2] - σ_zz[i, 1])
     end
 
     for i in 2:nx-1
@@ -84,16 +87,18 @@ for it = 1:nt
     end
     
     for j in 1:nz-1
-        σ_xz[end, j] = σ_xz[end, j] + vp*(dt / dx) * (σ_xz[end, j] - σ_xz[end-1, j])
-        σ_xz[1, j] = σ_xz[1, j] - vp*(dt / dx) * (σ_xz[2, j] - σ_xz[1, j])
+        σ_xz[end, j] = σ_xz[end, j] - vp * (dt / dx) * (σ_xz[end, j] - σ_xz[end-1, j])
+        σ_xz[1, j] = σ_xz[1, j] + vp * (dt / dx) * (σ_xz[2, j] - σ_xz[1, j])
     end
     
-    if it % 50 == 0
+    if it % 250 == 0
         plot = heatmap(σ_xx', clims=(-1e-3, 1e-3), title="Time step: $it", aspect_ratio=1)
         display(plot)
+        savefig("Derivative frame_t$(round(it*dt, digits=3)).png") 
     end
 
     u_r[it] = v_x[ir, jr]
 end
 u_disp = cumsum(u_r) .* dt
 plot(T, u_disp ./ maximum(abs.(u_disp)), lw=2, xlabel="Time (s)", ylabel="Normalized displacement", title="2D Elastic Wave - Displacement Seismogram", legend=false)
+savefig("Centre_source.png")
