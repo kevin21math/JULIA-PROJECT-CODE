@@ -4,6 +4,8 @@ nx, nz = 401, 401
 dx, dz = 15.0, 15.0
 nt = 1000
 dt = 0.001  
+X = collect(-(nx-2)*dx/200:dx/100:(nx-2)*dx/200)
+Z = collect(-(nz-1)*dz/200:dz/100:(nz-1)*dz/200)
 
 ρ = 2500.0
 vp = 4000.0
@@ -84,7 +86,7 @@ for it = 1:nt
     end
     
     if it % 250 == 0
-        plot = heatmap(τ_xx', clims=(-1e-3, 1e-3),xlabel="x", ylabel="z", title="wavefront of τ_xx at time t =$(round(it*dt, digits=3)) s ", aspect_ratio=1)
+        plot = heatmap(X,Z,τ_xx',xlims=(-30, 30), clims=(-1e-3, 1e-3),color=:seismic, xlabel="x", ylabel="z", aspect_ratio=1)
         display(plot)
         savefig("Derivative frame_t$(round(it*dt, digits=3)).png") 
     end  
