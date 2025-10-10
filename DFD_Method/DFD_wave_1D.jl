@@ -3,6 +3,7 @@ using SparseArrays, BSplineKit, LinearAlgebra, QuadGK, Plots
 fixzeros(x) = x == 0.0 ? 0.0 : x
 fixsmall(x) = abs(x) < 1e-3 ? 0.0 : x
 
+#add the path to the galerkin_cross.jl and shifted_knots.jl files from where it's stored
 include("C:\\Users\\hp\\Downloads\\VS CODE PRG\\julia project\\DFD_Method\\shifted_knots.jl")
 include("C:\\Users\\hp\\Downloads\\VS CODE PRG\\julia project\\DFD_Method\\galerkin_cross.jl")
 include("C:\\Users\\hp\\Downloads\\VS CODE PRG\\julia project\\DFD_Method\\galerkin_cross_elementwise.jl")
@@ -73,7 +74,7 @@ for i in 1:Nd
     K1loc = spzeros(nbasis2, nbasis1)
     #K1loc = (-1).*galerkin_cross_elementwise(basis2loc, basis1loc, (D1, D0); nquad=8)
     #K1loc = (-1).*galerkin_cross(basis2loc, basis1loc, (D1, D0); a = x[xloc[1]], b = x[xloc[end]], nquad = 24)
-    K1loc = galerkin_cross(basis2loc, basis1loc, (D1, D0); a = x[xloc[1]], b = x[xloc[end]], nquad = 24)
+    K1loc = galerkin_cross(basis2loc, basis1loc, (D1, D0); nquad = 24)
     
     K1loc = fixzeros.(K1loc)
     
@@ -97,7 +98,7 @@ for i in 1:Nd
     #D21[i] = fixsmall.(D21[i])
     
     f0 = 10.0
-    ξ = @. π*f0*(x[xloc] - 500) / v
+    ξ = @. π*f0*(x[xloc] - 3000) / v
     u0_vals = @. (1 - 2*ξ^2) * exp(-ξ^2)
     u0_vals = ifelse.(abs.(u0_vals) .< 1e-10, 0.0, u0_vals)
     
