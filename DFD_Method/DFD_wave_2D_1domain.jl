@@ -169,19 +169,21 @@ for i=1:n
     Ux=from_hat(Uxhat,LX1,LY1)
     Uy=from_hat(Uyhat,LX1,LY1)
 
-    current_t = i * dt
+    if i % frame_rate == 0
+       current_t = i * dt
             
-    B_x_vals = [evaluate(x1basis, i, val) for val in x, i in 1:nbasis_x1]
-    B_y_vals = [evaluate(y1basis, i, val) for val in y, i in 1:nbasis_y1]
-    Ux_grid = B_x_vals * Ux * B_y_vals'
-    Uy_grid = B_x_vals * Uy * B_y_vals'
+       B_x_vals = [evaluate(x1basis, i, val) for val in x, i in 1:nbasis_x1]
+       B_y_vals = [evaluate(y1basis, i, val) for val in y, i in 1:nbasis_y1]
+       Ux_grid = B_x_vals * Ux * B_y_vals'
+       Uy_grid = B_x_vals * Uy * B_y_vals'
 
-    max_abs_val=5*10^(-13)
-    p = heatmap(x, y, Ux_grid', aspect_ratio=:equal, c=custom_colors,clim=(-max_abs_val, max_abs_val), title="Horizontal Displacement (Ux) | t=$(round(current_t*1000000, sigdigits=2)) μs",
-        xlabel="x (m)",ylabel="y (m)",size=(900, 700))
-    scatter!(p, [x[source_ix]],[y[source_iy]], marker=:diamond, markersize=5,  markercolor=:red)
-    frame(anim, p)
-    println("Frame $(i/frame_rate)/$(n/frame_rate) at t=$(round(current_t*1000000, sigdigits=2)) μs captured.")
+       max_abs_val=5*10^(-13)
+       p = heatmap(x, y, Ux_grid', aspect_ratio=:equal, c=custom_colors,clim=(-max_abs_val, max_abs_val), title="Horizontal Displacement (Ux) | t=$(round(current_t*1000000, sigdigits=2)) μs",
+       xlabel="x (m)",ylabel="y (m)",size=(900, 700))
+       scatter!(p, [x[source_ix]],[y[source_iy]], marker=:diamond, markersize=5,  markercolor=:red)
+       frame(anim, p)
+       println("Frame $(i/frame_rate)/$(n/frame_rate) at t=$(round(current_t*1000000, sigdigits=2)) μs captured.")
+    end
 end
-gif(anim, "Elastic_Wave_DFDM_2D_1Domain.gif", fps=20)
+gif(anim, "Elastic_Wave_DFDM_2D_1Domain.gif", fps=10)
 
